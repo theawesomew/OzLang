@@ -1,0 +1,27 @@
+%import common.SIGNED_NUMBER -> number
+%import common.ESCAPED_STRING -> string_literal
+%import common._STRING_INNER -> identifier
+%import common.WS_INLINE -> whitespace
+
+value : number
+      | string_literal
+      | list
+      | identifier
+      | boolean;
+
+list : "[" [value, ("," value)*]  "]";
+
+boolean : "yeah" | "nah";
+
+declaration : [whitespace*]"old mate ", identifier, " is ", value";"; 
+
+binary_operation : value, [" "], binary_operator, [" "], value
+                 | binary_operation, [" "], binary_operator, [" "], value
+		 | binary_operation, [" "], binary_operator, [" "], binary_operation, ([" "], binary_operator, [" "], binary_operation)*; 
+
+unary_operation : unary_operator, number
+		| number, unary_operator;
+
+binary_operator : "+" | "-" | "*" | "/" | "%" | "//" | "==" | "<" | ">" | "!=";
+
+unary_operator : "++" | "--" | "!";
