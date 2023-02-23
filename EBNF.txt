@@ -1,27 +1,33 @@
-%import common.SIGNED_NUMBER -> number
-%import common.ESCAPED_STRING -> string_literal
-%import common._STRING_INNER -> identifier
-%import common.WS_INLINE -> whitespace
+program: function+ call
 
-value : number
-      | string_literal
-      | list
-      | identifier
-      | boolean;
+function: IDENTIFIER TYPE IDENTIFIER ("," TYPE IDENTIFIER)* ":" "{" statement* return_statement "}"
 
-list : "[" [value, ("," value)*]  "]";
+statement: IF "(" expression ")" "{" (statement | return_statement) "}"
+         | IF "(" expression ")" "{" (statement | return_statement) "}" ELSE "{" (statement | return_statement) "}"
+         | TYPE IDENTIFIER "=" (STRING | NUMBER | expression)
+         | call
 
-boolean : "yeah" | "nah";
+expression: expression OPERATOR expression
+          | IDENTIFIER OPERATOR IDENTIFIER
+          | IDENTIFIER OPERATOR expression
+          | IDENTIFIER OPERATOR (STRING | NUMBER)
+          | call
 
-declaration : [whitespace*]"old mate ", identifier, " is ", value";"; 
+call: IDENTIFIER "(" (call | expression | STRING | NUMBER) ("," (call | expression | STRING | NUMBER))* ")"
 
-binary_operation : value, [" "], binary_operator, [" "], value
-                 | binary_operation, [" "], binary_operator, [" "], value
-		 | binary_operation, [" "], binary_operator, [" "], binary_operation, ([" "], binary_operator, [" "], binary_operation)*; 
+return_statement: RETURN (call | IDENTIFIER | expression)*
 
-unary_operation : unary_operator, number
-		| number, unary_operator;
+IF: "if" 
+ELSE: "else"
+RETURN: "return"
+OPERATOR: "+" | "-" | "*" | "/" | "==" | "<" | ">" | "!=" | "<=" | ">="
+TYPE: "string" | "int"
+IDENTIFIER: /[a-zA-Z_][a-zA-Z_]*/
+STRING: /\".*?\"/
+NUMBER: /\-?[0-9]+/
 
-binary_operator : "+" | "-" | "*" | "/" | "%" | "//" | "==" | "<" | ">" | "!=";
-
-unary_operator : "++" | "--" | "!";
+%import common.SIGNED_NUMBER
+%import common.ESCAPED_STRING
+%import common._STRING_INNER
+%import common.WS
+%ignore WS

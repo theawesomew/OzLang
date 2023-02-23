@@ -1,2 +1,2 @@
 # OzLang
-An esoteric language comprised entirely of Australian slang
+An esoteric functional programming language comprised entirely of Australian 
