@@ -95,6 +95,9 @@ class Compiler ():
             varValue = varType(varNode.children[2].value) 
             self.builder.store(varValue, sp := self.builder.alloca(varType))
             localSymbols.set_symbol(varIdentifier, sp)
+        else:
+            varValue = ir.Constant.literal_array([*varNode.children[2].value])
+            ir.GlobalVariable(self.module, )
 
     def retStatement (self, retNode, localSymbols):
         valueToBeReturned = retNode.children[1].value
