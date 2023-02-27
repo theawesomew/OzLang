@@ -17,6 +17,7 @@ def Compiler ():
             elif ast.type == 'STRING':
                 return ir.Constant.literal_array([*ast.value])
         else:
+            pass
             
 
     def fnDeclaration (self, fnNode):
