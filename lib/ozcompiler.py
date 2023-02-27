@@ -16,7 +16,7 @@ def Compiler ():
 
     def __init__ (self, name=''):
         self.module = ir.Module(name=name)
-        self.builder = ir.IRBuilder()
+        self.builder = None
         self.globalSymbols = SymbolTable()
     
     def compile (self, ast):
@@ -24,6 +24,10 @@ def Compiler ():
             if node.data == FUNCTION:
                 func = fnDeclaration(node)
                 self.globalSymbols.set_symbol()
+            elif node.data == CALL:
+                fnCall(node)
+
+        return self.module
 
     def fnDeclaration (self, fnNode):
         fn = Node(fnNode)
@@ -38,7 +42,7 @@ def Compiler ():
 
         fnType = ir.FunctionType(returnType, tuple(argumentTypes))
         irFunc = ir.Function(self.module, fnType, name=self.decl.children[1].value)
-        irFunc.append_basic_block(name="entry")
+        block = irFunc.append_basic_block(name="entry")
 
         params = SymbolTable()
 
@@ -48,8 +52,8 @@ def Compiler ():
             stackPointer = self.builder.alloca(self.typ(type))
             params.set_symbol(identifier.value, stackPointer)
         
+        self.builder = ir.IRBuilder(block)
         localSymbols = SymbolTable()
-
         for node in fn.body:
             if node.data == IF_THEN:
                 ifthenStatement(node, localSymbols)

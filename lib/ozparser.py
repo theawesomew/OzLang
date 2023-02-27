@@ -23,6 +23,8 @@ class Parser ():
             expression: expression OPERATOR expression
                     | IDENTIFIER OPERATOR IDENTIFIER
                     | IDENTIFIER OPERATOR expression
+                    | expression OPERATOR IDENTIFIER
+                    | expression OPERATOR (STRING | NUMBER)
                     | IDENTIFIER OPERATOR (STRING | NUMBER)
                     | call
 
