@@ -1,28 +1,15 @@
-import lark
+import sys
+import os
+from ozparser import Parser
 
-EBNF = open('EBNF.txt', 'r')
+cmd, file = sys.argv[1:]
 
-parser = lark.Lark(EBNF.read(), start='program')
+if cmd not in ["run", "compile"]:
+    raise Exception("The supplied command argument is invalid. Try 'oz run' or 'oz compile'.")
 
-# expected to return 3
-function = r"""
-    f int a: {
-        return a + 1
-    }
+if not (file.endswith(".oz") and os.path.exists(file)):
+    raise Exception('Invalid file.')
 
-    g int b, int x: {
-        if (x >= 2) {
-            return b * x
-        }
+parser = Parser()
+print(tree := parser.parse(file))
 
-        return b
-    }
-
-    f(g(1, 2))
-"""
-
-tree = parser.parse(function)
-
-print(tree)
-
-EBNF.close()

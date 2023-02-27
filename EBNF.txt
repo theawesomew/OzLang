@@ -1,6 +1,10 @@
 program: function+ call
 
-function: IDENTIFIER TYPE IDENTIFIER ("," TYPE IDENTIFIER)* ":" "{" statement* return_statement "}"
+function: decl ":" body
+
+body: "{" statement* return_statement "}"
+decl: TYPE IDENTIFIER arguments
+arguments: TYPE IDENTIFIER ("," TYPE IDENTIFIER)* 
 
 statement: IF "(" expression ")" "{" (statement | return_statement) "}"
          | IF "(" expression ")" "{" (statement | return_statement) "}" ELSE "{" (statement | return_statement) "}"
@@ -15,7 +19,7 @@ expression: expression OPERATOR expression
 
 call: IDENTIFIER "(" (call | expression | STRING | NUMBER) ("," (call | expression | STRING | NUMBER))* ")"
 
-return_statement: RETURN (call | IDENTIFIER | expression)*
+return_statement: RETURN (call | IDENTIFIER | expression | STRING | NUMBER)
 
 IF: "if" 
 ELSE: "else"
