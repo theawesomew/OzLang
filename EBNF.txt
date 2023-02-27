@@ -10,7 +10,7 @@ statement: IF "(" expression ")" "{" (statement | return_statement) "}"
          | IF "(" expression ")" "{" (statement | return_statement) "}" ELSE "{" (statement | return_statement) "}"
          | TYPE IDENTIFIER "=" (STRING | NUMBER | expression)
          | call
-
+         
 expression: expression OPERATOR expression
           | IDENTIFIER OPERATOR IDENTIFIER
           | IDENTIFIER OPERATOR expression
