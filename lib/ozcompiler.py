@@ -82,11 +82,22 @@ class Compiler ():
     def fnCall (self, callNode):
         pass
 
-    # TODO: String variable declaration
+    def createString (self, string, identifier=''):
+        constantArray = []
+        for character in string:
+            constantArray.append(ir.Constant(ir.IntType(8), ord(character)))
+        
+        constantArray.append(ir.Constant(ir.IntType(8), ord('\0')))
+
+        value = ir.Constant.literal_array(constantArray)
+        sp = ir.GlobalVariable(self.module, ir.ArrayType(ir.IntType(8), len(string) + 1), identifier)
+
+        return value, sp
+  
     def varDeclaration (self, varNode, localSymbols): 
         varIdentifier = varNode.children[1].value
 
-        if localSymbols.has_symbol(varIdentifier):
+        if localSymbols.has_symbol(varIdentifier) or self.globalSymbols.has_symbol(varIdentifier):
             raise Exception('Variable with same name is already declared! All variables in Oz are immutable')
         
         varType = self.typ(varNode.children[0])
@@ -96,8 +107,9 @@ class Compiler ():
             self.builder.store(varValue, sp := self.builder.alloca(varType))
             localSymbols.set_symbol(varIdentifier, sp)
         else:
-            varValue = ir.Constant.literal_array([*varNode.children[2].value])
-            ir.GlobalVariable(self.module, )
+            varValue, sp = self.createString(varNode.children[2].value, varIdentifier)  
+            self.builder.store(varValue, sp)
+            self.globalSymbols.set_symbol(varIdentifier, sp)
 
     def retStatement (self, retNode, localSymbols):
         valueToBeReturned = retNode.children[1].value
@@ -110,6 +122,7 @@ class Compiler ():
             self.builder.ret(self.builder.load(localSymbols.get_symbol(valueToBeReturned)))
         elif typeOfValueToBeReturned == 'NUMBER':
             self.builder.ret(self.int32(valueToBeReturned))
+
 
 
 
