@@ -1,0 +1,46 @@
+program: function+ call
+
+function: decl arguments ":" body
+
+body: "{" statement* return_statement "}"
+decl: TYPE IDENTIFIER
+arguments: TYPE IDENTIFIER ("," TYPE IDENTIFIER)*
+
+var_decl: TYPE IDENTIFIER "=" (STRING | NUMBER | expression)
+if_else: IF "(" expression ")" "{" (statement | return_statement) "}" ELSE "{" (statement | return_statement) "}"
+if_then: IF "(" expression ")" "{" (statement | return_statement) "}"
+
+statement: if_then 
+    | if_else
+    | var_decl 
+    | call
+
+expression: expression OPERATOR expression
+    | IDENTIFIER OPERATOR IDENTIFIER
+    | IDENTIFIER OPERATOR expression
+    | expression OPERATOR IDENTIFIER
+    | expression OPERATOR (STRING | NUMBER)
+    | IDENTIFIER OPERATOR (STRING | NUMBER)
+    | NUMBER OPERATOR NUMBER
+    | STRING OPERATOR STRING
+    | call
+
+call: IDENTIFIER "(" (call | expression | STRING | NUMBER) ("," (call | expression | STRING | NUMBER))* ")"
+
+return_statement: RETURN (call | IDENTIFIER | expression | STRING | NUMBER)
+
+IF: "if" 
+ELSE: "else"
+RETURN: "return"
+OPERATOR: "+" | "-" | "*" | "/" | "==" | "<" | ">" | "!=" | "<=" | ">="
+TYPE: "string" | "int"
+IDENTIFIER: /[a-zA-Z_][a-zA-Z_]*/
+STRING: /\".*?\"/
+NUMBER: /\-?[0-9]+/
+
+%import common.SIGNED_NUMBER
+%import common.ESCAPED_STRING
+%import common._STRING_INNER
+%import common.WS
+%ignore WS
+
