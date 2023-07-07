@@ -1,0 +1,6 @@
+program: function+ call
+
+IF: "if"
+ELSE: "else"
+INTEGER: ([0-9]|[1-9][0-9]+)
+SIGNED_INTEGER: (+|-)?INTEGER
