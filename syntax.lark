@@ -1,6 +1,48 @@
-program: function+ call
+%import common (WS)
 
+// RULES
+start: function+ call
+
+// expressions
+expr: INTEGER BINARY_OP INTEGER               
+    | INTEGER UNARY_OP                        
+    | UNARY_OP INTEGER                        
+    | floating_point BINARY_OP floating_point 
+    | floating_point UNARY_OP                 
+    | UNARY_OP floating_point                 
+    | STRING "+" STRING                       
+    | expr BINARY_OP expr                     
+    | "(" expr ")"                            
+    | expr BINARY_OP INTEGER                  
+    | expr BINARY_OP STRING                   
+    | expr BINARY_OP floating_point           
+
+// number types
+signed_integer: ("+" | "-")INTEGER
+floating_point: ("+" | "-")INTEGER"."INTEGER
+
+value: INTEGER | signed_integer | floating_point | STRING | BOOL
+decl: TYPE IDENTIFIER "=" (value | call)
+
+return_statement: RETURN (IDENTIFIER | value | expr | call)
+
+if_statement: IF expr "{" (expr | decl | return_statement)+ "}"
+if_else_statement.1: if_statement ELSE "{" (expr | decl | return_statement)+ "}"
+
+function: TYPE IDENTIFIER "(" ((TYPE IDENTIFIER ",")* (TYPE IDENTIFIER))? ")" "{" (expr | decl | if_statement | if_else_statement) return_statement"}"
+
+call: IDENTIFIER "(" (IDENTIFIER | expr | value)* ")"
+
+// TERMINALS
 IF: "if"
 ELSE: "else"
-INTEGER: ([0-9]|[1-9][0-9]+)
-SIGNED_INTEGER: (+|-)?INTEGER
+RETURN: "return"
+INTEGER: /([0-9]|[1-9][0-9]+)/
+IDENTIFIER: /[_a-zA-Z]+/
+STRING: /".*"/
+BOOL: "true" | "false"
+BINARY_OP: "+" | "-" | "*" | "/" | "==" | "!=" | "<" | ">"
+UNARY_OP.1: "++" | "--"
+TYPE: "int" | "float" | "string" | "boolean"
+
+%ignore WS
